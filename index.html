@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Precificação ML 2025 - Final</title>
+    <title>Precificação ML 2025 - Limpo</title>
     <style>
         :root {
             --primary-color: #ffe600; /* ML Yellow */
@@ -67,6 +67,9 @@
             box-sizing: border-box;
         }
         
+        /* Placeholder styling for better UX */
+        ::placeholder { color: #ccc; }
+
         .hint { font-size: 0.8em; color: #777; margin-top: 4px; display: block;}
 
         .btn {
@@ -120,7 +123,6 @@
         }
         .badge-warn { background-color: #ffc107; color: #333; }
         
-        /* Highlight for Ops Expense Type */
         .ops-label { font-size: 0.8em; color: #555; font-style: italic; }
 
         @media (max-width: 600px) {
@@ -141,14 +143,14 @@
             
             <h3>Custos</h3>
             <div class="form-group">
-                <label>Custo do Produto (CMV)</label>
-                <input type="number" id="productCost" value="20.00" step="0.01">
+                <label>Custo do Produto (CMV) *</label>
+                <input type="number" id="productCost" step="0.01" placeholder="Ex: 20,00">
             </div>
             
             <div class="form-group">
                 <label>Despesas Operacionais / Embalagem</label>
                 <div class="input-group">
-                    <input type="number" id="opExpenses" value="3.00" step="0.01">
+                    <input type="number" id="opExpenses" step="0.01" placeholder="Ex: 3,00">
                     <select id="opExpensesType" onchange="updateOpsHint()">
                         <option value="fixed">R$ (Fixo)</option>
                         <option value="pct">% (Venda)</option>
@@ -159,14 +161,14 @@
 
             <div class="form-group">
                 <label>Custo Envio (Tabela Frete Grátis)</label>
-                <input type="number" id="shippingCost" value="32.90" step="0.01">
-                <span class="hint">Cobrado apenas se o Preço Final >= R$ 79,00</span>
+                <input type="number" id="shippingCost" step="0.01" placeholder="Ex: 32,90">
+                <span class="hint">Necessário se o Preço Final for >= R$ 79,00</span>
             </div>
 
             <h3>Taxas & Margens</h3>
             <div class="form-group">
                 <label>Margem de Lucro Desejada (%)</label>
-                <input type="number" id="targetMargin" value="10.0" step="0.1">
+                <input type="number" id="targetMargin" step="0.1" placeholder="Ex: 10">
             </div>
             <div class="form-group">
                 <label>Tipo de Anúncio</label>
@@ -177,11 +179,11 @@
             </div>
             <div class="form-group">
                 <label>Impostos (Simples/NFE) (%)</label>
-                <input type="number" id="taxRate" value="4.0" step="0.1">
+                <input type="number" id="taxRate" step="0.1" placeholder="Ex: 4">
             </div>
             <div class="form-group">
                 <label>Outras Taxas / Perdas (%)</label>
-                <input type="number" id="lossRate" value="0.0" step="0.1">
+                <input type="number" id="lossRate" step="0.1" placeholder="Ex: 0">
             </div>
 
             <button class="btn" onclick="calculatePrice()">Calcular Preço Ideal</button>
@@ -240,7 +242,7 @@
                 </table>
             </div>
             <div id="emptyState" style="text-align: center; color: #999; margin-top: 50px;">
-                Preencha os dados e clique em calcular.
+                Preencha os custos e margem para calcular.
             </div>
         </div>
     </div>
@@ -251,7 +253,6 @@
     const FEE_RULES = {
         free_shipping_threshold: 79.00,
         tiers: [
-            // "Micro" items (< 12.50) now pay 50% of price in fees instead of fixed amount
             { max: 12.50, fee: 0.0, type: 'pct', val: 0.50, name: "Micro (< 12.50)" },
             { max: 29.00, fee: 6.25, type: 'fixed', val: 6.25, name: "Baixo (12.50 - 29)" },
             { max: 50.00, fee: 6.50, type: 'fixed', val: 6.50, name: "Médio (29 - 50)" },
@@ -261,8 +262,8 @@
     };
 
     const LISTING_RATES = {
-        'classic': 0.115, // 11.5%
-        'premium': 0.165  // 16.5%
+        'classic': 0.115,
+        'premium': 0.165
     };
 
     function updateOpsHint() {
@@ -277,9 +278,18 @@
 
     // --- 2. CORE LOGIC ---
     function calculatePrice() {
-        // Parse Inputs
-        const cost = parseFloat(document.getElementById('productCost').value) || 0;
-        const shippingIfFree = parseFloat(document.getElementById('shippingCost').value) || 0;
+        // Validation: Custo do Produto is mandatory
+        const costInput = document.getElementById('productCost').value;
+        if (!costInput) {
+            alert("Por favor, insira o Custo do Produto.");
+            return;
+        }
+
+        const cost = parseFloat(costInput);
+        
+        // Validation: Custo Envio (we won't block, but we'll use 0 if empty)
+        const shippingInput = document.getElementById('shippingCost').value;
+        const shippingIfFree = shippingInput ? parseFloat(shippingInput) : 0;
         
         // Parse Hybrid Ops Expenses
         const opExpVal = parseFloat(document.getElementById('opExpenses').value) || 0;
@@ -288,9 +298,6 @@
         let opExpensesFixed = 0;
         let opExpensesPct = 0;
 
-        // CRITICAL LOGIC: 
-        // If 'pct', it goes to the denominator (variable rate).
-        // If 'fixed', it goes to the numerator (fixed cost).
         if (opExpType === 'fixed') {
             opExpensesFixed = opExpVal;
         } else {
@@ -315,11 +322,17 @@
         // --- Reverse Pricing Loop (Check Tiers) ---
         
         // A. Try Free Shipping Tier (> 79)
-        // Note: We pass shipping cost here because Seller pays it
+        // If shippingIfFree is 0, this calc might be misleading if the user forgot it.
+        // But per your request, we assume user knows what they are doing.
         const freeShipPrice = solveForPrice(inputs, 0.0, inputs.shippingIfFree);
         if (freeShipPrice >= FEE_RULES.free_shipping_threshold) {
             bestPrice = freeShipPrice;
             selectedTier = FEE_RULES.tiers[4];
+            
+            // Warning if calculated price > 79 but no shipping cost entered
+            if(inputs.shippingIfFree === 0) {
+                // We won't stop, but user might notice 0 shipping in results.
+            }
         }
 
         // B. Try High Tier (50 - 79)
@@ -341,7 +354,6 @@
         }
 
         // E. Try Micro Tier (< 12.50)
-        // Here, the fee is 50% of price. We model this by adding 0.50 to the percentage rates.
         if (!bestPrice) {
             const totalFixed = inputs.cost + inputs.opExpensesFixed; 
             const totalVariable = inputs.marginPct + inputs.taxPct + inputs.lossPct + inputs.commissionPct + inputs.opExpensesPct + 0.50;
@@ -355,20 +367,14 @@
         renderResults(bestPrice, selectedTier, inputs);
     }
 
-    // --- THE FORMULA ---
     function solveForPrice(inputs, fixedFeeAmount, shippingCost) {
-        // NUMERATOR: All Fixed Costs (Product + Ops[Fixed] + Shipping + ML Fee)
         const totalFixedValues = inputs.cost + inputs.opExpensesFixed + shippingCost + fixedFeeAmount;
-        
-        // DENOMINATOR: 100% - All Variable % (Tax + Commission + Margin + Ops[%])
         const totalRates = inputs.taxPct + inputs.commissionPct + inputs.marginPct + inputs.lossPct + inputs.opExpensesPct;
         
-        if (totalRates >= 1.0) return Infinity; // Math impossibility
-        
+        if (totalRates >= 1.0) return Infinity;
         return totalFixedValues / (1.0 - totalRates);
     }
 
-    // --- 3. RENDER UI ---
     function renderResults(price, tier, inputs) {
         const container = document.getElementById('resultContainer');
         const emptyState = document.getElementById('emptyState');
@@ -381,7 +387,6 @@
         emptyState.style.display = 'none';
         container.style.display = 'block';
 
-        // 1. Calculate Absolute Values based on the final Price
         let fixedFeeVal = 0;
         let shippingVal = 0;
 
@@ -395,7 +400,6 @@
             shippingVal = inputs.shippingIfFree;
         }
 
-        // Dynamic Op Expense Calculation
         let opExpRealVal = 0;
         let opTypeLabel = "";
         
@@ -403,19 +407,15 @@
             opExpRealVal = inputs.opExpensesFixed;
             opTypeLabel = "(Fixo)";
         } else {
-            // Here is the confirmation: % applied to Final Price
             opExpRealVal = price * inputs.opExpensesPct;
             opTypeLabel = "(% sobre Venda)";
         }
 
         const taxVal = price * inputs.taxPct;
         const commVal = price * inputs.commissionPct;
-        
-        // Net Profit = Price - All Costs
         const profitVal = price - inputs.cost - shippingVal - fixedFeeVal - taxVal - commVal - opExpRealVal;
         const realMargin = (profitVal / price) * 100;
 
-        // 2. Update HTML Elements
         document.getElementById('displayPrice').innerText = formatMoney(price);
         document.getElementById('tierBadge').innerHTML = `<span class="badge ${tier.shippingRequired ? 'badge-warn' : ''}">${tier.name}</span>`;
         
@@ -431,8 +431,6 @@
         
         const profitEl = document.getElementById('dtProfit');
         profitEl.innerText = formatMoney(profitVal);
-        
-        // Visual check for negative profit (floating point safety)
         profitEl.style.color = profitVal >= -0.01 ? '#28a745' : '#dc3545';
         
         document.getElementById('dtMargin').innerText = realMargin.toFixed(2) + "%";
@@ -442,7 +440,6 @@
         return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
     
-    // Initialize hint
     updateOpsHint();
 </script>
 
