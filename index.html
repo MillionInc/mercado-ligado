@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo Precificação ML 2025</title>
+    <title>Precificação ML 2025 - Final</title>
     <style>
         :root {
             --primary-color: #ffe600; /* ML Yellow */
@@ -22,7 +22,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
@@ -50,13 +50,21 @@
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9em; }
-        .form-group input, .form-group select {
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        .input-group input { flex: 2; }
+        .input-group select { flex: 1; min-width: 120px; background-color: #f8f9fa;}
+
+        input, select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 16px;
-            box-sizing: border-box; /* Fix padding issue */
+            box-sizing: border-box;
         }
         
         .hint { font-size: 0.8em; color: #777; margin-top: 4px; display: block;}
@@ -72,6 +80,7 @@
             cursor: pointer;
             font-weight: bold;
             transition: background 0.2s;
+            margin-top: 10px;
         }
         .btn:hover { background-color: #1a1e4d; }
 
@@ -110,6 +119,9 @@
             margin-left: 5px;
         }
         .badge-warn { background-color: #ffc107; color: #333; }
+        
+        /* Highlight for Ops Expense Type */
+        .ops-label { font-size: 0.8em; color: #555; font-style: italic; }
 
         @media (max-width: 600px) {
             .grid { grid-template-columns: 1fr; }
@@ -121,29 +133,37 @@
 <div class="container">
     <div class="header">
         <h1>Calculadora de Precificação ML 2025</h1>
-        <p>POC para validação de lógica de precificação reversa com tiers dinâmicos.</p>
     </div>
 
     <div class="grid">
         <div class="card">
-            <h2>Dados do Produto</h2>
+            <h2>Dados de Entrada</h2>
             
-            <h3>Custos & Despesas</h3>
+            <h3>Custos</h3>
             <div class="form-group">
-                <label>Custo do Produto (R$)</label>
+                <label>Custo do Produto (CMV)</label>
                 <input type="number" id="productCost" value="20.00" step="0.01">
             </div>
+            
             <div class="form-group">
-                <label>Custo Envio se Grátis (R$)</label>
-                <input type="number" id="shippingCost" value="32.90" step="0.01">
-                <span class="hint">Usado apenas se o preço final for >= R$ 79,00</span>
-            </div>
-            <div class="form-group">
-                <label>Despesas Operacionais / Embalagem (R$)</label>
-                <input type="number" id="opExpenses" value="3.00" step="0.01">
+                <label>Despesas Operacionais / Embalagem</label>
+                <div class="input-group">
+                    <input type="number" id="opExpenses" value="3.00" step="0.01">
+                    <select id="opExpensesType" onchange="updateOpsHint()">
+                        <option value="fixed">R$ (Fixo)</option>
+                        <option value="pct">% (Venda)</option>
+                    </select>
+                </div>
+                <span class="hint" id="opsHint">Valor fixo somado ao custo do produto.</span>
             </div>
 
-            <h3>Configuração de Venda</h3>
+            <div class="form-group">
+                <label>Custo Envio (Tabela Frete Grátis)</label>
+                <input type="number" id="shippingCost" value="32.90" step="0.01">
+                <span class="hint">Cobrado apenas se o Preço Final >= R$ 79,00</span>
+            </div>
+
+            <h3>Taxas & Margens</h3>
             <div class="form-group">
                 <label>Margem de Lucro Desejada (%)</label>
                 <input type="number" id="targetMargin" value="10.0" step="0.1">
@@ -160,7 +180,7 @@
                 <input type="number" id="taxRate" value="4.0" step="0.1">
             </div>
             <div class="form-group">
-                <label>Cobranças Indevidas / Perdas (%)</label>
+                <label>Outras Taxas / Perdas (%)</label>
                 <input type="number" id="lossRate" value="0.0" step="0.1">
             </div>
 
@@ -176,7 +196,7 @@
                     <div id="tierBadge"></div>
                 </div>
 
-                <h3>Detalhamento Financeiro</h3>
+                <h3>Demonstrativo (DRE)</h3>
                 <table class="breakdown-table">
                     <tr>
                         <td>(+) Preço de Venda</td>
@@ -203,7 +223,10 @@
                         <td id="dtShipping" style="color: #d9534f;">- R$ 0,00</td>
                     </tr>
                     <tr>
-                        <td>(-) Despesas Operacionais</td>
+                        <td>
+                            (-) Desp. Operacionais 
+                            <span id="opTypeDisplay" class="ops-label"></span>
+                        </td>
                         <td id="dtOp" style="color: #d9534f;">- R$ 0,00</td>
                     </tr>
                     <tr style="border-top: 2px solid #ddd;">
@@ -217,18 +240,19 @@
                 </table>
             </div>
             <div id="emptyState" style="text-align: center; color: #999; margin-top: 50px;">
-                Clique em calcular para ver a análise.
+                Preencha os dados e clique em calcular.
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- 1. CONFIGURATION: Fee Rules (JSON Structure Simulation) ---
+    // --- 1. CONFIGURATION: Fee Rules (Updated 2025) ---
     const FEE_RULES = {
         free_shipping_threshold: 79.00,
         tiers: [
-            { max: 12.50, fee: 0.0, type: 'pct', val: 0.50, name: "Micro (< 12.50)" }, // 50% rule
+            // "Micro" items (< 12.50) now pay 50% of price in fees instead of fixed amount
+            { max: 12.50, fee: 0.0, type: 'pct', val: 0.50, name: "Micro (< 12.50)" },
             { max: 29.00, fee: 6.25, type: 'fixed', val: 6.25, name: "Baixo (12.50 - 29)" },
             { max: 50.00, fee: 6.50, type: 'fixed', val: 6.50, name: "Médio (29 - 50)" },
             { max: 79.00, fee: 6.75, type: 'fixed', val: 6.75, name: "Alto (50 - 79)" },
@@ -241,13 +265,44 @@
         'premium': 0.165  // 16.5%
     };
 
-    // --- 2. CORE LOGIC: Reverse Pricing Engine ---
+    function updateOpsHint() {
+        const type = document.getElementById('opExpensesType').value;
+        const hint = document.getElementById('opsHint');
+        if(type === 'fixed') {
+            hint.innerText = "Valor fixo em Reais (R$) somado aos custos.";
+        } else {
+            hint.innerText = "Percentual descontado sobre o Preço FINAL de venda.";
+        }
+    }
+
+    // --- 2. CORE LOGIC ---
     function calculatePrice() {
-        // Get Inputs
+        // Parse Inputs
+        const cost = parseFloat(document.getElementById('productCost').value) || 0;
+        const shippingIfFree = parseFloat(document.getElementById('shippingCost').value) || 0;
+        
+        // Parse Hybrid Ops Expenses
+        const opExpVal = parseFloat(document.getElementById('opExpenses').value) || 0;
+        const opExpType = document.getElementById('opExpensesType').value;
+        
+        let opExpensesFixed = 0;
+        let opExpensesPct = 0;
+
+        // CRITICAL LOGIC: 
+        // If 'pct', it goes to the denominator (variable rate).
+        // If 'fixed', it goes to the numerator (fixed cost).
+        if (opExpType === 'fixed') {
+            opExpensesFixed = opExpVal;
+        } else {
+            opExpensesPct = opExpVal / 100;
+        }
+
         const inputs = {
-            cost: parseFloat(document.getElementById('productCost').value) || 0,
-            shippingIfFree: parseFloat(document.getElementById('shippingCost').value) || 0,
-            opExpenses: parseFloat(document.getElementById('opExpenses').value) || 0,
+            cost: cost,
+            shippingIfFree: shippingIfFree,
+            opExpensesFixed: opExpensesFixed,
+            opExpensesPct: opExpensesPct,
+            
             marginPct: (parseFloat(document.getElementById('targetMargin').value) || 0) / 100,
             taxPct: (parseFloat(document.getElementById('taxRate').value) || 0) / 100,
             lossPct: (parseFloat(document.getElementById('lossRate').value) || 0) / 100,
@@ -257,70 +312,76 @@
         let bestPrice = null;
         let selectedTier = null;
 
-        // Try tiers in reverse order (Highest price impact first)
-        // 1. Try Free Shipping Tier (> 79)
+        // --- Reverse Pricing Loop (Check Tiers) ---
+        
+        // A. Try Free Shipping Tier (> 79)
+        // Note: We pass shipping cost here because Seller pays it
         const freeShipPrice = solveForPrice(inputs, 0.0, inputs.shippingIfFree);
         if (freeShipPrice >= FEE_RULES.free_shipping_threshold) {
             bestPrice = freeShipPrice;
             selectedTier = FEE_RULES.tiers[4];
         }
 
-        // 2. If that didn't work, try High Tier (50 - 79)
+        // B. Try High Tier (50 - 79)
         if (!bestPrice) {
             const p = solveForPrice(inputs, 6.75, 0);
             if (p >= 50.00 && p < 79.00) { bestPrice = p; selectedTier = FEE_RULES.tiers[3]; }
         }
 
-        // 3. Try Mid Tier (29 - 50)
+        // C. Try Mid Tier (29 - 50)
         if (!bestPrice) {
             const p = solveForPrice(inputs, 6.50, 0);
             if (p >= 29.00 && p < 50.00) { bestPrice = p; selectedTier = FEE_RULES.tiers[2]; }
         }
 
-        // 4. Try Low Tier (12.50 - 29)
+        // D. Try Low Tier (12.50 - 29)
         if (!bestPrice) {
             const p = solveForPrice(inputs, 6.25, 0);
             if (p >= 12.50 && p < 29.00) { bestPrice = p; selectedTier = FEE_RULES.tiers[1]; }
         }
 
-        // 5. Try Micro Tier (< 12.50) - Special Formula (Fee is 50% of Price)
+        // E. Try Micro Tier (< 12.50)
+        // Here, the fee is 50% of price. We model this by adding 0.50 to the percentage rates.
         if (!bestPrice) {
-            // Formula changes: SP = Costs / (1 - (Rates + 0.50))
-            const totalVariable = inputs.marginPct + inputs.taxPct + inputs.lossPct + inputs.commissionPct + 0.50;
+            const totalFixed = inputs.cost + inputs.opExpensesFixed; 
+            const totalVariable = inputs.marginPct + inputs.taxPct + inputs.lossPct + inputs.commissionPct + inputs.opExpensesPct + 0.50;
+            
             if (totalVariable < 1.0) {
-                const fixedCosts = inputs.cost + inputs.opExpenses; // No shipping, No fixed fee amount
-                const p = fixedCosts / (1.0 - totalVariable);
+                const p = totalFixed / (1.0 - totalVariable);
                 if (p < 12.50) { bestPrice = p; selectedTier = FEE_RULES.tiers[0]; }
             }
         }
 
-        // Display Results
         renderResults(bestPrice, selectedTier, inputs);
     }
 
+    // --- THE FORMULA ---
     function solveForPrice(inputs, fixedFeeAmount, shippingCost) {
-        // SP = (Cost + Ops + Shipping + FixedFee) / (1 - (Tax + Comm + Margin + Loss))
-        const totalFixedValues = inputs.cost + inputs.opExpenses + shippingCost + fixedFeeAmount;
-        const totalRates = inputs.taxPct + inputs.commissionPct + inputs.marginPct + inputs.lossPct;
+        // NUMERATOR: All Fixed Costs (Product + Ops[Fixed] + Shipping + ML Fee)
+        const totalFixedValues = inputs.cost + inputs.opExpensesFixed + shippingCost + fixedFeeAmount;
         
-        if (totalRates >= 1.0) return Infinity; // Impossible
+        // DENOMINATOR: 100% - All Variable % (Tax + Commission + Margin + Ops[%])
+        const totalRates = inputs.taxPct + inputs.commissionPct + inputs.marginPct + inputs.lossPct + inputs.opExpensesPct;
+        
+        if (totalRates >= 1.0) return Infinity; // Math impossibility
+        
         return totalFixedValues / (1.0 - totalRates);
     }
 
-    // --- 3. UI RENDERING ---
+    // --- 3. RENDER UI ---
     function renderResults(price, tier, inputs) {
         const container = document.getElementById('resultContainer');
         const emptyState = document.getElementById('emptyState');
         
         if (!price || price === Infinity) {
-            alert("Não foi possível calcular um preço rentável com essas margens e custos.");
+            alert("Erro: A soma das margens e taxas ultrapassa 100%. Verifique os dados.");
             return;
         }
 
         emptyState.style.display = 'none';
         container.style.display = 'block';
 
-        // Calculate breakdown values
+        // 1. Calculate Absolute Values based on the final Price
         let fixedFeeVal = 0;
         let shippingVal = 0;
 
@@ -334,12 +395,27 @@
             shippingVal = inputs.shippingIfFree;
         }
 
+        // Dynamic Op Expense Calculation
+        let opExpRealVal = 0;
+        let opTypeLabel = "";
+        
+        if (inputs.opExpensesFixed > 0) {
+            opExpRealVal = inputs.opExpensesFixed;
+            opTypeLabel = "(Fixo)";
+        } else {
+            // Here is the confirmation: % applied to Final Price
+            opExpRealVal = price * inputs.opExpensesPct;
+            opTypeLabel = "(% sobre Venda)";
+        }
+
         const taxVal = price * inputs.taxPct;
         const commVal = price * inputs.commissionPct;
-        const profitVal = price - inputs.cost - inputs.opExpenses - shippingVal - fixedFeeVal - taxVal - commVal;
+        
+        // Net Profit = Price - All Costs
+        const profitVal = price - inputs.cost - shippingVal - fixedFeeVal - taxVal - commVal - opExpRealVal;
         const realMargin = (profitVal / price) * 100;
 
-        // Update DOM
+        // 2. Update HTML Elements
         document.getElementById('displayPrice').innerText = formatMoney(price);
         document.getElementById('tierBadge').innerHTML = `<span class="badge ${tier.shippingRequired ? 'badge-warn' : ''}">${tier.name}</span>`;
         
@@ -349,11 +425,15 @@
         document.getElementById('dtComm').innerText = "- " + formatMoney(commVal);
         document.getElementById('dtFixedFee').innerText = "- " + formatMoney(fixedFeeVal);
         document.getElementById('dtShipping').innerText = "- " + formatMoney(shippingVal);
-        document.getElementById('dtOp').innerText = "- " + formatMoney(inputs.opExpenses);
+        
+        document.getElementById('dtOp').innerText = "- " + formatMoney(opExpRealVal);
+        document.getElementById('opTypeDisplay').innerText = opTypeLabel;
         
         const profitEl = document.getElementById('dtProfit');
         profitEl.innerText = formatMoney(profitVal);
-        profitEl.style.color = profitVal > 0 ? '#28a745' : '#dc3545';
+        
+        // Visual check for negative profit (floating point safety)
+        profitEl.style.color = profitVal >= -0.01 ? '#28a745' : '#dc3545';
         
         document.getElementById('dtMargin').innerText = realMargin.toFixed(2) + "%";
     }
@@ -361,6 +441,9 @@
     function formatMoney(val) {
         return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
+    
+    // Initialize hint
+    updateOpsHint();
 </script>
 
 </body>
