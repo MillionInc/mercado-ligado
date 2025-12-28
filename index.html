@@ -3,553 +3,581 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora ML 2025 (Educativa)</title>
+    <title>Calculadora Seller 2025 - Refined</title>
     <style>
         :root {
-            --primary: #ffe600;
-            --secondary: #2d3277;
-            --text: #333;
-            --light-gray: #f5f5f5;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
-            --white: #ffffff;
-            --tooltip-bg: #2d3277;
+            --primary: #ffe600; /* ML Yellow */
+            --secondary: #2d3277; /* ML Blue */
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --success: #00a650;
+            --danger: #ff3e4e;
+            --info: #3483fa;
+            --border: #ced4da;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background: var(--light-gray);
-            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 20px;
             line-height: 1.5;
         }
 
-        .container { max-width: 1000px; margin: 0 auto; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        
         .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { color: var(--secondary); margin: 0; }
-        
-        /* Layout */
-        .grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 25px; }
-        .card { background: var(--white); padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .header h1 { color: var(--secondary); margin: 0; font-size: 1.8rem; }
+        .header p { color: #666; font-size: 1rem; margin-top: 5px; }
 
-        /* Form Elements */
-        h2 { margin-top: 0; font-size: 1.4em; color: var(--secondary); border-bottom: 2px solid var(--primary); padding-bottom: 10px; display: inline-block;}
-        .form-group { margin-bottom: 20px; }
-        
-        /* Labels with Tooltip Alignment */
-        .form-group label { 
-            display: flex; align-items: center; 
-            font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; color: var(--secondary); 
+        /* --- CARDS --- */
+        .global-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--secondary);
         }
-        
-        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
-        .input-group { display: flex; gap: 0; }
-        .input-group input { border-top-right-radius: 0; border-bottom-right-radius: 0; flex: 2; }
-        .input-group select { border-top-left-radius: 0; border-bottom-left-radius: 0; flex: 1; background: #f9f9f9; border-left: 0; min-width: 100px;}
 
-        /* --- TOOLTIP SYSTEM (CSS Only) --- */
+        .strategy-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- REPUTATION SELECTOR --- */
+        .reputation-section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+        .rep-selector { display: flex; gap: 15px; margin-top: 10px; }
+        .rep-btn {
+            flex: 1; padding: 15px; border: 2px solid var(--border); border-radius: 8px;
+            cursor: pointer; font-size: 1rem; font-weight: 600; text-align: center;
+            transition: all 0.2s ease; background: white; color: #777;
+        }
+        .rep-btn:hover { border-color: #aaa; }
+        .rep-btn.active { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .rep-btn.rep-green.active { border-color: var(--success); background-color: #f0fdf4; color: var(--success); }
+        .rep-btn.rep-yellow.active { border-color: #ffc107; background-color: #fffbf0; color: #b48900; }
+        .rep-btn.rep-orange.active { border-color: var(--danger); background-color: #fff5f5; color: var(--danger); }
+
+        /* --- INPUT GRID --- */
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+        }
+
+        label { display: flex; align-items: center; font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; color: #444; }
+        
+        input, select {
+            width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 16px; transition: border-color 0.2s; box-sizing: border-box;
+        }
+        input:focus, select:focus { border-color: var(--info); outline: none; }
+
+        /* --- REFINED INPUT GROUP --- */
+        .input-group-refined {
+            display: flex;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .input-group-refined:focus-within {
+            border-color: var(--info);
+            box-shadow: 0 0 0 1px var(--info);
+        }
+        .input-group-refined input {
+            border: none;
+            border-radius: 0;
+            flex-grow: 1;
+        }
+        .input-group-refined input:focus { box-shadow: none; }
+        
+        /* The Minimalist Select */
+        .input-group-refined select {
+            border: none;
+            border-left: 1px solid var(--border);
+            border-radius: 0;
+            background-color: #f8f9fa;
+            width: 70px; /* Compact width */
+            text-align: center;
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+        }
+        .input-group-refined select:hover { background-color: #e9ecef; }
+
+        /* Dynamic Caption */
+        .field-caption {
+            display: block;
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 6px;
+            min-height: 1.2em; /* Prevent layout jump */
+        }
+
+        /* --- TOOLTIPS --- */
+        .tooltip-container { position: relative; margin-left: 6px; display: inline-flex; }
         .tooltip-icon {
-            display: inline-flex; justify-content: center; align-items: center;
-            width: 18px; height: 18px; background: #e0e0e0; color: #555;
-            border-radius: 50%; font-size: 12px; margin-left: 8px; cursor: help;
-            font-weight: bold; transition: 0.2s;
+            width: 18px; height: 18px; background: #e9ecef; color: #666;
+            border-radius: 50%; font-size: 11px; display: flex; align-items: center; justify-content: center;
+            cursor: help; font-weight: bold;
         }
-        .tooltip-icon:hover { background: var(--secondary); color: #fff; }
-
-        .tooltip-wrapper { position: relative; }
-        
-        .tooltip-content {
-            visibility: hidden; opacity: 0;
-            width: 250px; background-color: var(--tooltip-bg); color: #fff;
-            text-align: left; border-radius: 6px; padding: 10px;
-            position: absolute; z-index: 10; bottom: 135%; left: 50%; margin-left: -125px;
-            font-size: 0.85em; font-weight: normal; line-height: 1.4;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s; transform: translateY(10px);
+        .tooltip-text {
+            visibility: hidden; opacity: 0; width: 240px; background-color: #2c3e50; color: #fff;
+            text-align: left; border-radius: 6px; padding: 12px; position: absolute; z-index: 100;
+            bottom: 140%; left: 50%; margin-left: -120px; transition: 0.2s; pointer-events: none;
+            font-size: 0.8rem; font-weight: normal; line-height: 1.4; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        
-        /* Arrow for tooltip */
-        .tooltip-content::after {
-            content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px;
-            border-width: 5px; border-style: solid; border-color: var(--tooltip-bg) transparent transparent transparent;
+        .tooltip-text::after {
+            content: ""; position: absolute; top: 100%; left: 50%; margin-left: -6px;
+            border-width: 6px; border-style: solid; border-color: #2c3e50 transparent transparent transparent;
         }
+        .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; transform: translateY(-5px); }
 
-        .tooltip-wrapper:hover .tooltip-content {
-            visibility: visible; opacity: 1; transform: translateY(0);
-        }
-
-        /* Reputation Selector */
-        .reputation-selector { display: flex; gap: 10px; margin-bottom: 20px; }
-        .rep-option { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; text-align: center; cursor: pointer; font-weight: bold; opacity: 0.6; font-size: 0.9em; }
-        .rep-option.active { opacity: 1; border: 2px solid #333; transform: scale(1.02); }
-        .rep-green { background-color: #d4edda; color: #155724; }
-        .rep-yellow { background-color: #fff3cd; color: #856404; }
-        .rep-orange { background-color: #ffe8cc; color: #fd7e14; }
-
-        /* Tabs */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-        .tab-btn { background: none; border: none; padding: 10px 20px; font-size: 1.1em; font-weight: bold; color: #777; cursor: pointer; border-radius: 4px; transition: 0.2s; }
-        .tab-btn.active { background: var(--secondary); color: var(--white); }
-        .tab-btn:hover:not(.active) { background: #e9ecef; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- LAYOUT STRATEGIES --- */
+        .strategies-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        h2 { margin-top: 0; color: var(--secondary); font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
 
         /* Results */
-        .btn { background: var(--secondary); color: #fff; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn:hover { background: #1a1e4d; }
+        .result-panel {
+            background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px;
+            padding: 20px; text-align: center; margin: 20px 0;
+        }
+        .big-price { font-size: 2.2rem; font-weight: 800; color: var(--secondary); display: block; margin: 5px 0; }
         
-        .result-box { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; text-align: center; }
-        .final-result { font-size: 2.5em; font-weight: 800; color: var(--secondary); margin: 10px 0; }
+        .table-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f1f1; font-size: 0.9rem; }
+        .table-row:last-child { border-bottom: none; }
+        .val-neg { color: var(--danger); }
+        .val-pos { color: var(--success); font-weight: bold; }
         
-        table { width: 100%; border-collapse: collapse; font-size: 0.9em; margin-top: 20px; }
-        td { padding: 10px 15px; border-bottom: 1px solid #f0f0f0; }
-        .text-right { text-align: right; }
-        .text-danger { color: var(--danger); }
-        .text-success { color: var(--success); font-weight: bold; }
+        .bar-chart { height: 8px; background: #e0e0e0; border-radius: 4px; display: flex; overflow: hidden; margin-top: 15px; }
+        .bar-segment { height: 100%; transition: width 0.5s ease-out; }
 
-        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+        .sync-btn {
+            background: var(--info); color: white; border: none; padding: 12px; border-radius: 6px;
+            font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; font-size: 0.95rem;
+        }
+        .sync-btn:hover { background: #1870f0; }
+
+        .alert-box {
+            background: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-size: 0.85rem;
+            margin-top: 10px; display: none; border-left: 4px solid #ffc107; text-align: left;
+        }
+
+        @media (max-width: 768px) {
+            .strategies-grid { grid-template-columns: 1fr; }
+            .rep-selector { flex-direction: column; gap: 10px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>Calculadora ML 2025</h1>
-        <p>Preço Ideal (Reverso) e Simulação de Lucro (Direto)</p>
+        <h1>Calculadora Seller 2025</h1>
+        <p>Planejamento de Preço e Simulação de Margem Real</p>
     </div>
 
-    <div class="grid">
-        <div class="card">
-            <h2>1. Estrutura do Vendedor</h2>
+    <div class="global-card">
+        
+        <div class="reputation-section">
+            <label>
+                Selecione sua Reputação Atual
+                <div class="tooltip-container">
+                    <span class="tooltip-icon">?</span>
+                    <span class="tooltip-text">A reputação define seu desconto no frete. Verdes pagam ~50% menos. Laranjas pagam tabela cheia.</span>
+                </div>
+            </label>
+            <div class="rep-selector">
+                <div class="rep-btn rep-green active" onclick="setRep('green')" id="btn-green">
+                    Verde / Líder / Oficial
+                    <div style="font-size:0.75rem; margin-top:4px; font-weight:normal;">Maior desconto no frete</div>
+                </div>
+                <div class="rep-btn rep-yellow" onclick="setRep('yellow')" id="btn-yellow">
+                    Amarela
+                    <div style="font-size:0.75rem; margin-top:4px; font-weight:normal;">Desconto médio</div>
+                </div>
+                <div class="rep-btn rep-orange" onclick="setRep('orange')" id="btn-orange">
+                    Laranja / Vermelha
+                    <div style="font-size:0.75rem; margin-top:4px; font-weight:normal;">Sem desconto</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-inputs">
             
-            <div class="form-group">
+            <div>
                 <label>
-                    Sua Reputação
-                    <div class="tooltip-wrapper">
+                    Custo do Produto (R$)
+                    <div class="tooltip-container">
                         <span class="tooltip-icon">?</span>
-                        <div class="tooltip-content">
-                            <strong>Impacto no Frete:</strong><br>
-                            🟢 <strong>Verde/Líder:</strong> ~50% de desconto no frete.<br>
-                            🟡 <strong>Amarela:</strong> ~40% de desconto.<br>
-                            🔴 <strong>Laranja:</strong> Sem desconto (paga 100% da tabela).
-                        </div>
+                        <span class="tooltip-text">Quanto você paga no produto (fornecedor + impostos de compra).</span>
                     </div>
                 </label>
-                <div class="reputation-selector">
-                    <div class="rep-option rep-green active" onclick="setReputation('green')" id="btn-green">Verde/Líder</div>
-                    <div class="rep-option rep-yellow" onclick="setReputation('yellow')" id="btn-yellow">Amarela</div>
-                    <div class="rep-option rep-orange" onclick="setReputation('orange')" id="btn-orange">Laranja/Verm</div>
-                </div>
-                <input type="hidden" id="reputation" value="green">
+                <input type="number" id="productCost" placeholder="Ex: 25,00" step="0.01" oninput="recalcAll()">
             </div>
 
-            <div class="form-group">
+            <div>
                 <label>
-                    Peso do Produto (Tabela 2025)
-                    <div class="tooltip-wrapper">
+                    Despesas Operacionais
+                    <div class="tooltip-container">
                         <span class="tooltip-icon">?</span>
-                        <div class="tooltip-content">
-                            O ML calcula o frete pelo <strong>maior valor</strong> entre o peso real (balança) e o peso cúbico (medidas). Selecione a faixa correta para evitar prejuízo no cálculo automático.
-                        </div>
+                        <span class="tooltip-text">Custos extras como embalagem, fita, brindes ou marketing.</span>
                     </div>
                 </label>
-                <select id="productWeight">
+                
+                <div class="input-group-refined">
+                    <input type="number" id="opExpenses" placeholder="Ex: 3,00" step="0.01" oninput="recalcAll()">
+                    <select id="opType" onchange="updateOpHint(); recalcAll()">
+                        <option value="fixed">R$</option>
+                        <option value="pct">%</option>
+                    </select>
+                </div>
+                <small id="opHint" class="field-caption">Valor fixo somado ao custo.</small>
+            </div>
+
+            <div>
+                <label>
+                    Peso (Tabela ML 2025)
+                    <div class="tooltip-container">
+                        <span class="tooltip-icon">?</span>
+                        <span class="tooltip-text">Peso considerado para o frete (Maior entre físico e volumétrico).</span>
+                    </div>
+                </label>
+                <select id="weight" onchange="recalcAll()">
                     <option value="0.3">Até 300g</option>
                     <option value="0.5">300g a 500g</option>
                     <option value="1.0">500g a 1kg</option>
                     <option value="2.0">1kg a 2kg</option>
                     <option value="3.0">2kg a 3kg</option>
-                    <option value="4.0">3kg a 4kg</option>
-                    <option value="5.0">4kg a 5kg</option>
+                    <option value="5.0">3kg a 5kg</option>
                     <option value="9.0">5kg a 9kg</option>
                     <option value="13.0">9kg a 13kg</option>
-                    <option value="17.0">13kg a 17kg</option>
                 </select>
             </div>
 
-            <h2>2. Custos do Produto</h2>
-            
-            <div class="form-group">
+            <div>
                 <label>
-                    Custo do Produto (CMV) *
-                    <div class="tooltip-wrapper">
+                    Imposto Nota Fiscal (%)
+                    <div class="tooltip-container">
                         <span class="tooltip-icon">?</span>
-                        <div class="tooltip-content">
-                            Quanto o produto custa para você. Some o valor de compra ou fabricação.
-                        </div>
+                        <span class="tooltip-text">Alíquota do Simples Nacional sobre a venda. Se for MEI, deixe 0.</span>
                     </div>
                 </label>
-                <input type="number" id="productCost" placeholder="R$ 0,00" step="0.01">
+                <input type="number" id="taxRate" placeholder="Ex: 4.0" step="0.1" oninput="recalcAll()">
             </div>
 
-            <div class="form-group">
-                <label>
-                    Despesas Operacionais
-                    <div class="tooltip-wrapper">
-                        <span class="tooltip-icon">?</span>
-                        <div class="tooltip-content">
-                            Custos de embalagem (caixa, fita, etiqueta).<br>
-                            <strong>Fixo (R$):</strong> Some seu custo total (ex: estoque, folha de pagamento, entre outros).<br>
-                            <strong>Porcentagem (%):</strong> Desconta do preço final (ex: marketing, reserva de erro).
-                        </div>
-                    </div>
-                </label>
-                <div class="input-group">
-                    <input type="number" id="opExpenses" placeholder="3,00" step="0.01">
-                    <select id="opExpensesType">
-                        <option value="fixed">R$ (Fixo)</option>
-                        <option value="pct">% (Venda)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
+            <div>
                 <label>
                     Tipo de Anúncio
-                    <div class="tooltip-wrapper">
+                    <div class="tooltip-container">
                         <span class="tooltip-icon">?</span>
-                        <div class="tooltip-content">
-                            <strong>Clássico (~11.5%):</strong> Menor exposição.<br>
-                            <strong>Premium (~16.5%):</strong> Maior exposição e oferece parcelamento sem juros ao comprador.
-                        </div>
+                        <span class="tooltip-text">Premium cobra ~5% a mais, mas oferece parcelamento sem juros.</span>
                     </div>
                 </label>
-                <select id="listingType">
+                <select id="listingType" onchange="recalcAll()">
                     <option value="classic">Clássico (11.5%)</option>
                     <option value="premium">Premium (16.5%)</option>
                 </select>
             </div>
+        </div>
+    </div>
+
+    <div class="strategies-grid">
+        
+        <div class="strategy-card">
+            <h2>🎯 Definir Preço Ideal</h2>
+            <div style="font-size:0.9rem; color:#666; margin-bottom:15px;">Diga quanto quer lucrar, nós calculamos o preço.</div>
             
-            <div class="form-group">
-                <label>
-                    Impostos (%)
-                    <div class="tooltip-wrapper">
-                        <span class="tooltip-icon">?</span>
-                        <div class="tooltip-content">
-                            Alíquota da sua nota fiscal (Simples Nacional).<br>
-                            Se for <strong>MEI</strong>, coloque 0 (o custo é fixo mensal).
-                        </div>
-                    </div>
-                </label>
-                <input type="number" id="taxRate" placeholder="Ex: 4.0" step="0.1">
+            <label>Margem Líquida Desejada (%)</label>
+            <input type="number" id="targetMargin" placeholder="Ex: 15" step="1" oninput="calcReverse()">
+            
+            <div class="result-panel">
+                <small>Preço de Venda Sugerido</small>
+                <span class="big-price" id="rev-price">R$ 0,00</span>
+                <div id="rev-alert" class="alert-box"></div>
+                <button class="sync-btn" onclick="syncPrice()">⬇️ Simular Detalhes com este Preço</button>
             </div>
 
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('target-margin')" id="tab-btn-margin">Definir Preço</button>
-                <button class="tab-btn" onclick="switchTab('target-price')" id="tab-btn-price">Simular Lucro</button>
+            <div class="table-row"><span>Custo Total</span><span class="val-neg" id="rev-cost">-</span></div>
+            <div class="table-row"><span>Comissão + Imposto</span><span class="val-neg" id="rev-fees">-</span></div>
+            <div class="table-row"><span>Frete / Taxa ML</span><span class="val-neg" id="rev-ship">-</span></div>
+            <div class="table-row" style="margin-top:5px; border-top:2px solid #eee; padding-top:10px;">
+                <strong>Lucro Líquido</strong><span class="val-pos" id="rev-profit">-</span>
             </div>
 
-            <div id="tab-target-margin" class="tab-content active">
-                <div class="form-group" style="background: #e8f4fd; padding: 15px; border-radius: 6px;">
-                    <label>
-                        Margem Líquida Desejada (%)
-                        <div class="tooltip-wrapper">
-                            <span class="tooltip-icon">?</span>
-                            <div class="tooltip-content">
-                                Quanto você quer que sobre no bolso (LUCRO LIMPO) após pagar produto, taxas ML, frete e impostos.
-                            </div>
-                        </div>
-                    </label>
-                    <input type="number" id="desiredMargin" placeholder="Ex: 15" step="0.1">
-                </div>
-                <button class="btn" onclick="calculateReverse()">Calcular Preço Ideal</button>
+            <div class="bar-chart">
+                <div id="rev-bar-cost" class="bar-segment" style="background:#ccc; width:0%"></div>
+                <div id="rev-bar-fee" class="bar-segment" style="background:#ffab00; width:0%"></div>
+                <div id="rev-bar-profit" class="bar-segment" style="background:#00a650; width:0%"></div>
             </div>
-
-            <div id="tab-target-price" class="tab-content">
-                <div class="form-group" style="background: #fff3cd; padding: 15px; border-radius: 6px;">
-                    <label>
-                        Preço de Venda Final (R$)
-                        <div class="tooltip-wrapper">
-                            <span class="tooltip-icon">?</span>
-                            <div class="tooltip-content">
-                                Insira o preço que você quer praticar para descobrir quanto sobrará de lucro.
-                            </div>
-                        </div>
-                    </label>
-                    <input type="number" id="desiredPrice" placeholder="Ex: 89,90" step="0.01">
-                </div>
-                <button class="btn" onclick="calculateProfit()">Simular Lucro</button>
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#888; margin-top:5px;">
+                <span>Custo</span><span>Taxas</span><span>Lucro</span>
             </div>
-
         </div>
 
-        <div class="card">
-            <h2>3. Resultado</h2>
-            
-            <div id="emptyState" style="text-align:center; color:#999; padding: 40px;">
-                <p>Preencha os dados e clique em calcular.</p>
+        <div class="strategy-card" style="border: 2px solid var(--info);">
+            <div style="position:absolute; top:20px; right:20px; background:var(--info); color:white; padding:2px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold;">MANUAL</div>
+            <h2>🧮 Simular Lucro Real</h2>
+            <div style="font-size:0.9rem; color:#666; margin-bottom:15px;">Teste preços finais (ex: 99,90) e veja o resultado.</div>
+
+            <label>Preço de Venda Final (R$)</label>
+            <input type="number" id="manualPrice" placeholder="Ex: 89,90" step="0.01" oninput="calcManual()">
+
+            <div class="result-panel">
+                <small>Seu Lucro será:</small>
+                <span class="big-price" id="man-profit" style="color:var(--success)">R$ 0,00</span>
+                <div style="font-weight:bold; color:#555; margin-top:5px;">Margem: <span id="man-margin">0%</span></div>
+                <div id="man-alert" class="alert-box"></div>
             </div>
 
-            <div id="resultContainer" style="display:none;">
-                <div class="result-box">
-                    <span id="resultLabel">Preço Sugerido</span>
-                    <div class="final-result" id="displayMainResult">R$ 0,00</div>
-                    <div id="subResultInfo" style="font-size: 1.2em; font-weight:bold; color:#555;"></div>
-                </div>
+            <div class="table-row"><span>Receita Bruta</span><span id="man-revenue">-</span></div>
+            <div class="table-row"><span>(-) Custos Prod + Ops</span><span class="val-neg" id="man-cost">-</span></div>
+            <div class="table-row"><span>(-) Comissões + Imposto</span><span class="val-neg" id="man-fees">-</span></div>
+            <div class="table-row"><span>(-) Frete / Taxa Fixa</span><span class="val-neg" id="man-ship">-</span></div>
 
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>(+) Venda Bruta</td>
-                            <td class="text-right" id="dtPrice">R$ 0,00</td>
-                        </tr>
-                        <tr>
-                            <td>(-) Custos (Produto + Ops)</td>
-                            <td class="text-right text-danger" id="dtTotalCost">- R$ 0,00</td>
-                        </tr>
-                        <tr>
-                            <td>(-) Impostos + Comissão</td>
-                            <td class="text-right text-danger" id="dtTaxComm">- R$ 0,00</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                (-) Frete (Seller)
-                                <div class="tooltip-wrapper" style="display:inline-block; margin-left:5px;">
-                                    <span class="tooltip-icon" style="width:14px; height:14px; font-size:10px;">?</span>
-                                    <div class="tooltip-content">
-                                        Calculado dinamicamente com base no preço e reputação. Abaixo de R$ 79,00 o frete é por conta do comprador.
-                                    </div>
-                                </div>
-                                <small style="display:block; color:#777;" id="shippingDesc">Isento (< 79)</small>
-                            </td>
-                            <td class="text-right text-danger" id="dtShipping">- R$ 0,00</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                (-) Taxa Fixa ML
-                                <div class="tooltip-wrapper" style="display:inline-block; margin-left:5px;">
-                                    <span class="tooltip-icon" style="width:14px; height:14px; font-size:10px;">?</span>
-                                    <div class="tooltip-content">
-                                        Custo fixo por unidade para vendas abaixo de R$ 79,00. Varia entre R$ 6,25 e R$ 6,75.
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-right text-danger" id="dtFixedFee">- R$ 0,00</td>
-                        </tr>
-                        <tr style="background-color: #f0f8ff; font-weight: bold;">
-                            <td style="color:var(--success);">(=) Lucro Líquido</td>
-                            <td class="text-right text-success" id="dtProfit">R$ 0,00</td>
-                        </tr>
-                        <tr>
-                            <td>Margem Real</td>
-                            <td class="text-right" id="dtMargin">0%</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="bar-chart">
+                <div id="man-bar-cost" class="bar-segment" style="background:#ccc; width:0%"></div>
+                <div id="man-bar-fee" class="bar-segment" style="background:#ffab00; width:0%"></div>
+                <div id="man-bar-profit" class="bar-segment" style="background:#00a650; width:0%"></div>
             </div>
         </div>
+
     </div>
 </div>
 
 <script>
-    // --- DATA ---
-    // Full Price Table (Tabela Cheia 2025 - Ref 40547)
-    const BASE_SHIPPING_TABLE = [
+    // --- 1. CONFIGURATION DATA (2025 RULES) ---
+    const BASE_SHIPPING = [
         { max: 0.3, cost: 39.90 }, { max: 0.5, cost: 42.90 }, { max: 1.0, cost: 44.90 },
-        { max: 2.0, cost: 46.90 }, { max: 3.0, cost: 49.90 }, { max: 4.0, cost: 53.90 },
-        { max: 5.0, cost: 56.90 }, { max: 9.0, cost: 88.90 }, { max: 13.0, cost: 131.90 },
-        { max: 17.0, cost: 146.90 }
+        { max: 2.0, cost: 46.90 }, { max: 3.0, cost: 49.90 }, { max: 5.0, cost: 56.90 }, 
+        { max: 9.0, cost: 88.90 }, { max: 13.0, cost: 131.90 }
     ];
 
-    // Discounts by Reputation [Price 79, 100, 120, 150, 200]
-    const DISCOUNT_MATRIX = {
-        'green':  [0.30, 0.35, 0.40, 0.45, 0.50], 
+    const DISCOUNTS = {
+        'green':  [0.30, 0.35, 0.40, 0.45, 0.50],
         'yellow': [0.40, 0.45, 0.50, 0.55, 0.60],
         'orange': [1.00, 1.00, 1.00, 1.00, 1.00]
     };
+    
+    const RATES = { 'classic': 0.115, 'premium': 0.165 };
 
-    const LISTING_RATES = { 'classic': 0.115, 'premium': 0.165 };
+    // --- 2. APP STATE ---
+    let state = {
+        rep: 'green',
+        cost: 0,
+        opVal: 0,
+        opType: 'fixed',
+        weight: 0.3,
+        tax: 0,
+        rate: 0.115
+    };
 
-    // --- HELPER FUNCTIONS ---
-
-    function getCommonInputs() {
-        return {
-            cost: parseFloat(document.getElementById('productCost').value) || 0,
-            weight: parseFloat(document.getElementById('productWeight').value),
-            reputation: document.getElementById('reputation').value,
-            taxPct: (parseFloat(document.getElementById('taxRate').value) || 0) / 100,
-            commissionPct: LISTING_RATES[document.getElementById('listingType').value],
-            opVal: parseFloat(document.getElementById('opExpenses').value) || 0,
-            opType: document.getElementById('opExpensesType').value
-        };
+    // --- 3. EVENT HANDLERS ---
+    function setRep(color) {
+        state.rep = color;
+        document.querySelectorAll('.rep-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-'+color).classList.add('active');
+        recalcAll();
     }
 
-    // Determine Shipping Cost based on Price, Weight and Reputation
-    function getShippingCost(price, weight, reputation) {
-        if (price < 79.00) return 0; // Buyer pays
-
-        // Get Base Cost
-        const baseRow = BASE_SHIPPING_TABLE.find(r => r.max >= weight) || BASE_SHIPPING_TABLE[BASE_SHIPPING_TABLE.length-1];
-        const baseCost = baseRow.cost;
-
-        // Get Discount Index
-        let idx = 0;
-        if (price >= 200) idx = 4;
-        else if (price >= 150) idx = 3;
-        else if (price >= 120) idx = 2;
-        else if (price >= 100) idx = 1;
-        else idx = 0; // 79-99
-
-        const multiplier = DISCOUNT_MATRIX[reputation][idx];
-        return baseCost * multiplier;
-    }
-
-    // Determine Fixed Fee based on Price
-    function getFixedFee(price) {
-        if (price >= 79.00) return 0;
-        if (price >= 50.00) return 6.75;
-        if (price >= 29.00) return 6.50;
-        if (price >= 12.50) return 6.25;
-        return price * 0.50; // Micro prices < 12.50
-    }
-
-    // --- TAB 1 LOGIC: REVERSE PRICING ---
-    function calculateReverse() {
-        const i = getCommonInputs();
-        if(!i.cost) { alert("Informe o custo do produto."); return; }
-
-        const targetMargin = (parseFloat(document.getElementById('desiredMargin').value) || 0) / 100;
-        const opFixed = i.opType === 'fixed' ? i.opVal : 0;
-        const opPct = i.opType === 'pct' ? (i.opVal / 100) : 0;
-
-        // Tiers for Iteration (Desc order)
-        const TIERS = [
-            { min: 200.00, max: 999999, idx: 4, type: 'ship' },
-            { min: 150.00, max: 199.99, idx: 3, type: 'ship' },
-            { min: 120.00, max: 149.99, idx: 2, type: 'ship' },
-            { min: 100.00, max: 119.99, idx: 1, type: 'ship' },
-            { min: 79.00,  max: 99.99,  idx: 0, type: 'ship' },
-            { min: 50.00,  max: 78.99,  val: 6.75, type: 'fee' },
-            { min: 29.00,  max: 49.99,  val: 6.50, type: 'fee' },
-            { min: 12.50,  max: 28.99,  val: 6.25, type: 'fee' },
-            { min: 0.00,   max: 12.49,  val: 0.50, type: 'micro' } // 50%
-        ];
-
-        let bestPrice = null;
+    function updateOpHint() {
+        const type = document.getElementById('opType').value;
+        const hintEl = document.getElementById('opHint');
+        const inputEl = document.getElementById('opExpenses');
         
-        // Base Shipping for selected weight
-        const baseRow = BASE_SHIPPING_TABLE.find(r => r.max >= i.weight) || BASE_SHIPPING_TABLE[BASE_SHIPPING_TABLE.length-1];
-
-        for (const tier of TIERS) {
-            let shipCost = 0;
-            let fixedFee = 0;
-            let extraVarRate = 0;
-
-            if (tier.type === 'ship') {
-                const multiplier = DISCOUNT_MATRIX[i.reputation][tier.idx];
-                shipCost = baseRow.cost * multiplier;
-            } else if (tier.type === 'fee') {
-                fixedFee = tier.val;
-            } else if (tier.type === 'micro') {
-                extraVarRate = 0.50; 
-            }
-
-            // Formula: P = (FixedCosts) / (1 - VariableRates)
-            const numerator = i.cost + opFixed + shipCost + fixedFee;
-            const denominator = 1.0 - (i.taxPct + i.commissionPct + targetMargin + opPct + extraVarRate);
-
-            if (denominator > 0) {
-                const p = numerator / denominator;
-                if (p >= tier.min && p <= tier.max) {
-                    bestPrice = p;
-                    break; 
-                }
-            }
-        }
-
-        if (bestPrice) {
-            renderResults(bestPrice, i, "price");
+        if (type === 'fixed') {
+            hintEl.innerText = "Valor fixo em R$ somado ao custo do produto.";
+            inputEl.placeholder = "Ex: 3,00";
         } else {
-            alert("Não foi possível calcular um preço viável com essa margem. Tente reduzir a margem ou os custos.");
+            hintEl.innerText = "Porcentagem % descontada do preço de venda final.";
+            inputEl.placeholder = "Ex: 5.0";
         }
     }
 
-    // --- TAB 2 LOGIC: PROFIT SIMULATION ---
-    function calculateProfit() {
-        const i = getCommonInputs();
-        if(!i.cost) { alert("Informe o custo do produto."); return; }
+    function recalcAll() {
+        // Read Inputs (Handle empty as 0)
+        state.cost = parseFloat(document.getElementById('productCost').value) || 0;
+        state.opVal = parseFloat(document.getElementById('opExpenses').value) || 0;
+        state.opType = document.getElementById('opType').value;
+        state.weight = parseFloat(document.getElementById('weight').value);
+        state.tax = (parseFloat(document.getElementById('taxRate').value) || 0) / 100;
+        state.rate = RATES[document.getElementById('listingType').value];
 
-        const price = parseFloat(document.getElementById('desiredPrice').value);
-        if(!price) { alert("Informe o preço de venda."); return; }
-
-        renderResults(price, i, "profit");
+        // Trigger Computations
+        calcReverse();
+        calcManual();
     }
 
-    // --- RENDER LOGIC ---
-    function renderResults(price, i, mode) {
-        document.getElementById('emptyState').style.display = 'none';
-        document.getElementById('resultContainer').style.display = 'block';
+    function syncPrice() {
+        const pStr = document.getElementById('rev-price').innerText;
+        const pVal = parseFloat(pStr.replace('R$','').replace(/\./g,'').replace(',','.').trim());
+        if(pVal > 0) {
+            const input = document.getElementById('manualPrice');
+            input.value = pVal.toFixed(2);
+            input.style.backgroundColor = '#fff3cd';
+            setTimeout(() => input.style.backgroundColor = '#fff', 400);
+            calcManual();
+        }
+    }
 
-        // Calculate final details
-        const shipCost = getShippingCost(price, i.weight, i.reputation);
-        const fixedFee = getFixedFee(price);
-        
-        const opFixed = i.opType === 'fixed' ? i.opVal : 0;
-        const opPctVal = i.opType === 'pct' ? (price * (i.opVal/100)) : 0;
-        const totalOp = opFixed + opPctVal;
+    // --- 4. BUSINESS LOGIC ---
+    function getShippingAndFee(price) {
+        let ship = 0;
+        let fee = 0;
+        if (price < 79.00) {
+            if (price < 12.50) fee = price * 0.50; 
+            else if (price < 29.00) fee = 6.25;
+            else if (price < 50.00) fee = 6.50;
+            else fee = 6.75;
+        } else {
+            const row = BASE_SHIPPING.find(r => r.max >= state.weight) || BASE_SHIPPING[BASE_SHIPPING.length-1];
+            let idx = 0; // 79-99
+            if (price >= 200) idx = 4;
+            else if (price >= 150) idx = 3;
+            else if (price >= 120) idx = 2;
+            else if (price >= 100) idx = 1;
+            ship = row.cost * DISCOUNTS[state.rep][idx];
+        }
+        return { ship, fee };
+    }
 
-        const taxVal = price * i.taxPct;
-        const commVal = price * i.commissionPct;
+    function getAlerts(price) {
+        let alerts = [];
+        if (price >= 74 && price < 79) alerts.push("⚠️ Cuidado: Preço próximo de R$ 79. Se passar, você paga o frete!");
+        if (price < 12.50) alerts.push("🛑 Alerta: Abaixo de R$ 12,50 a taxa fixa vira 50% do valor.");
+        return alerts;
+    }
+
+    // --- 5. CALCULATION ENGINES ---
+    function calcReverse() {
+        if(state.cost === 0) { resetResult('rev'); return; }
         
-        const profit = price - i.cost - totalOp - shipCost - fixedFee - taxVal - commVal;
+        const targetMarginInput = document.getElementById('targetMargin').value;
+        if(!targetMarginInput) { resetResult('rev'); return; } // Wait for input
+        
+        const targetMargin = parseFloat(targetMarginInput) / 100;
+
+        const tiers = [
+            {min: 200, idx: 4}, {min: 150, idx: 3}, {min: 120, idx: 2}, 
+            {min: 100, idx: 1}, {min: 79, idx: 0},
+            {min: 50, fee: 6.75}, {min: 29, fee: 6.50}, {min: 12.50, fee: 6.25}, {min: 0, micro: true}
+        ];
+        
+        const row = BASE_SHIPPING.find(r => r.max >= state.weight) || BASE_SHIPPING[BASE_SHIPPING.length-1];
+        let bestP = 0;
+
+        for (let t of tiers) {
+            let S = 0, F = 0, V = 0;
+            if (t.idx !== undefined) S = row.cost * DISCOUNTS[state.rep][t.idx];
+            else if (t.fee) F = t.fee;
+            else if (t.micro) V = 0.50;
+
+            let OpFix = state.opType === 'fixed' ? state.opVal : 0;
+            let OpPct = state.opType === 'pct' ? (state.opVal/100) : 0;
+
+            const num = state.cost + OpFix + S + F;
+            const den = 1.0 - (state.tax + state.rate + targetMargin + OpPct + V);
+            
+            if (den > 0) {
+                const P = num / den;
+                const prevTier = tiers[tiers.indexOf(t)-1];
+                const max = prevTier ? prevTier.min : 999999;
+                if (P >= t.min && P < max) { bestP = P; break; }
+            }
+        }
+
+        // Display
+        document.getElementById('rev-price').innerText = fmt(bestP);
+        
+        const details = getShippingAndFee(bestP);
+        const op = state.opType === 'fixed' ? state.opVal : (bestP * state.opVal/100);
+        const taxComm = bestP * (state.tax + state.rate);
+        const profit = bestP - state.cost - op - details.ship - details.fee - taxComm;
+
+        document.getElementById('rev-cost').innerText = "- " + fmt(state.cost + op);
+        document.getElementById('rev-fees').innerText = "- " + fmt(taxComm);
+        document.getElementById('rev-ship').innerText = "- " + fmt(details.ship + details.fee);
+        document.getElementById('rev-profit').innerText = fmt(profit);
+
+        updateBar('rev', bestP, state.cost + op, details.ship + details.fee + taxComm, profit);
+        renderAlert('rev-alert', getAlerts(bestP));
+    }
+
+    function calcManual() {
+        const priceInput = document.getElementById('manualPrice').value;
+        const price = parseFloat(priceInput);
+        
+        if (!price || state.cost === 0) { resetResult('man'); return; }
+
+        const details = getShippingAndFee(price);
+        const op = state.opType === 'fixed' ? state.opVal : (price * state.opVal/100);
+        const taxComm = price * (state.tax + state.rate);
+        
+        const profit = price - state.cost - op - details.ship - details.fee - taxComm;
         const margin = (profit / price) * 100;
 
-        // Visual Updates
-        document.getElementById('dtPrice').innerText = fmt(price);
-        document.getElementById('dtTotalCost').innerText = "- " + fmt(i.cost + totalOp);
-        document.getElementById('dtTaxComm').innerText = "- " + fmt(taxVal + commVal);
-        document.getElementById('dtShipping').innerText = "- " + fmt(shipCost);
-        document.getElementById('dtFixedFee').innerText = "- " + fmt(fixedFee);
+        const pEl = document.getElementById('man-profit');
+        pEl.innerText = fmt(profit);
+        pEl.style.color = profit >= 0 ? "var(--success)" : "var(--danger)";
         
-        const profitEl = document.getElementById('dtProfit');
-        profitEl.innerText = fmt(profit);
-        profitEl.className = profit >= 0 ? "text-right text-success" : "text-right text-danger";
-        
-        document.getElementById('dtMargin').innerText = margin.toFixed(2) + "%";
+        document.getElementById('man-margin').innerText = margin.toFixed(2) + "%";
+        document.getElementById('man-revenue').innerText = fmt(price);
+        document.getElementById('man-cost').innerText = "- " + fmt(state.cost + op);
+        document.getElementById('man-fees').innerText = "- " + fmt(taxComm);
+        document.getElementById('man-ship').innerText = "- " + fmt(details.ship + details.fee);
 
-        // Main Header Update based on Mode
-        if (mode === "price") {
-            document.getElementById('resultLabel').innerText = "Preço Sugerido";
-            document.getElementById('displayMainResult').innerText = fmt(price);
-            document.getElementById('subResultInfo').innerText = `Margem: ${margin.toFixed(2)}%`;
-        } else {
-            document.getElementById('resultLabel').innerText = "Lucro Líquido";
-            document.getElementById('displayMainResult').innerText = fmt(profit);
-            document.getElementById('displayMainResult').style.color = profit >= 0 ? "var(--success)" : "var(--danger)";
-            document.getElementById('subResultInfo').innerText = `Margem: ${margin.toFixed(2)}%`;
-        }
-
-        // Shipping Description Update
-        const shipDesc = document.getElementById('shippingDesc');
-        const repName = i.reputation === 'green' ? 'Verde' : (i.reputation === 'yellow' ? 'Amarela' : 'Laranja');
-        
-        if (shipCost > 0) {
-            shipDesc.innerText = `Frete Dinâmico (${repName})`;
-        } else {
-            shipDesc.innerText = "Por conta do comprador (< 79)";
-        }
+        updateBar('man', price, state.cost + op, details.ship + details.fee + taxComm, profit);
+        renderAlert('man-alert', getAlerts(price));
     }
 
-    // --- UI HELPERS ---
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        
-        document.getElementById('tab-' + tabName).classList.add('active');
-        document.getElementById('tab-btn-' + (tabName === 'target-margin' ? 'margin' : 'price')).classList.add('active');
-        
-        document.getElementById('resultContainer').style.display = 'none';
-        document.getElementById('emptyState').style.display = 'block';
+    function resetResult(prefix) {
+        if(prefix === 'rev') {
+            document.getElementById('rev-price').innerText = "R$ 0,00";
+            document.getElementById('rev-cost').innerText = "-";
+            document.getElementById('rev-fees').innerText = "-";
+            document.getElementById('rev-ship').innerText = "-";
+            document.getElementById('rev-profit').innerText = "-";
+            document.getElementById('rev-alert').style.display = 'none';
+        } else {
+            document.getElementById('man-profit').innerText = "R$ 0,00";
+            document.getElementById('man-margin').innerText = "0%";
+            document.getElementById('man-revenue').innerText = "-";
+            document.getElementById('man-cost').innerText = "-";
+            document.getElementById('man-fees').innerText = "-";
+            document.getElementById('man-ship').innerText = "-";
+            document.getElementById('man-alert').style.display = 'none';
+        }
+        updateBar(prefix, 0, 0, 0, 0);
     }
 
-    function setReputation(rep) {
-        document.getElementById('reputation').value = rep;
-        ['green', 'yellow', 'orange'].forEach(r => document.getElementById('btn-' + r).classList.remove('active'));
-        document.getElementById('btn-' + rep).classList.add('active');
+    function updateBar(prefix, total, cost, fees, profit) {
+        if(total <= 0) {
+            document.getElementById(prefix+'-bar-cost').style.width = "0%";
+            document.getElementById(prefix+'-bar-fee').style.width = "0%";
+            document.getElementById(prefix+'-bar-profit').style.width = "0%";
+            return;
+        }
+        let c = (cost/total)*100;
+        let f = (fees/total)*100;
+        let p = (profit/total)*100;
+        if(p < 0) p = 0;
+
+        document.getElementById(prefix+'-bar-cost').style.width = c + "%";
+        document.getElementById(prefix+'-bar-fee').style.width = f + "%";
+        document.getElementById(prefix+'-bar-profit').style.width = p + "%";
+    }
+
+    function renderAlert(id, msgs) {
+        const box = document.getElementById(id);
+        if (msgs.length > 0) { box.style.display = 'block'; box.innerText = msgs[0]; }
+        else { box.style.display = 'none'; }
     }
 
     function fmt(n) { return n.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}); }
